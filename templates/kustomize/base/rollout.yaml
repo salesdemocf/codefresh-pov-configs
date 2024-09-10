@@ -1,0 +1,55 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  labels:
+    app: application-name
+  name: application-name
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: application-name
+  strategy:
+    blueGreen:
+      activeService: application-name
+      autoPromotionEnabled: true
+      previewService: application-name-preview
+  template:
+    spec:
+      containers:
+        - envFrom:
+            - secretRef:
+                name: application-name
+          image: full_image_name:image-tag
+          imagePullPolicy: Always
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /health
+              port: 80
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 5
+          name: application-name
+          ports:
+            - containerPort: 80
+              name: http
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /docs
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 3
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 256Mi
+      imagePullSecrets:
+        - name: cloudsmith-credentials
+      restartPolicy: Always

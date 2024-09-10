@@ -1,0 +1,65 @@
+# Pipeline to generate Kubernetes configuration files
+
+# Required Variables
+
+# Parent Pipeline Variables
+# APPLICATION_NAME
+# The name of the Application possibly CF_REPO_NAME as a default
+# CONFIGURATIONS_REPOSITORY
+# - Name of VCS Repository containing configuration files.
+# GIT_INTEGRATION_NAME
+# - Name of GIT Pipeline Integration.
+# FQDN_IMAGE
+# - Combination of Image registry domain + registry name + image name
+# IMAGE_TAG
+# - Tag for Container Image.
+
+version: '1.0'
+stages:
+  - clone
+  - create
+  - commit
+
+steps:
+# Clone Configurations Repository
+  clone_apps:
+    title: Cloning Configurations Repository...
+    type: git-clone
+    repo: ${{CF_REPO_OWNER}}/${{CONFIGURATIONS_REPOSITORY}}
+    revision: main
+    git: ${{GIT_INTEGRATION_NAME}}
+    stage: clone
+
+# Create Configuration Files
+  create_argocd_files:
+    title: Creation Configuration Files...
+    type: freestyle
+    image: quay.io/codefresh-contrib/yq:4
+    working_directory: ${{clone_apps}}
+    commands:
+      - echo 'Creating Configurations files...'
+      - mkdir ${{APPLICATION_NAME}}
+      - cd ${{APPLICATION_NAME}}
+      - cp -r ../templates/kustomize/ .
+      - echo 'Replacing placeholders in Configurations files...'
+      - cd ${{APPLICATION_NAME}}
+      - grep -rl 'application-name' . | xargs sed -i -e 's/application-name/${{APPLICATION_NAME}}/g'
+      - grep -rl 'fqdn-image' . | xargs sed -i -e 's/fqdn-image/${{FQDN_IMAGE}}/g'
+      - grep -rl 'image-tag' . | xargs sed -i -e 's/image-tage/${{IMAGE_TAG}}/g'
+      - echo 'Completed Configuration file changes...'
+      - cat ./*/*.yaml
+    stage: create
+
+# Commit Configuration Files
+  commit_and_push:
+    title: Committing New Configuration Files...
+    type: git-commit
+    arguments:
+      repo: ${{CF_REPO_OWNER}}/${{CONFIGURATIONS_REPOSITORY}}
+      git: ${{GIT_INTEGRATION_NAME}}
+      working_directory: '${{CF_VOLUME_PATH}}/${{CONFIGURATIONS_REPOSITORY}}'
+      commit_message: 'Adding Configuration files for ${{APPLICATION_NAME}}'
+      git_user_name: codefresh-automation
+      git_user_email: automation@codefresh.io
+      rebase: true
+    stage: commit
