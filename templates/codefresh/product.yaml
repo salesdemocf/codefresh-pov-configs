@@ -1,0 +1,20 @@
+apiVersion: codefresh.io/v1beta1
+kind: Product
+metadata:
+  name: application-name
+spec:
+  promotionFlows:
+    - name: dev-stg-prod-flow
+      gitTriggerSelectors:
+        - key: commitMessage
+          operator: In
+          values:
+            - Deploying changes to application-name*
+  promotionTemplate:
+    versionSource:
+      file: replace.yaml
+      jsonPath: $.[0].value
+    promotion:
+      replace.yaml:
+        jsonPaths:
+          - $.[0].value

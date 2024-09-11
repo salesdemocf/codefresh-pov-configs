@@ -1,4 +1,4 @@
-# Pipeline to generate Kubernetes configuration files
+# Pipeline to generate Kubernetes configuration and Codefresh files
 
 # Required Variables
 
@@ -7,6 +7,8 @@
 # The name of the Application possibly CF_REPO_NAME as a default
 # CONFIGURATIONS_REPOSITORY
 # - Name of VCS Repository containing configuration files.
+# ISC_REPOSITORY
+# - Name of VCS Repository containing Codefresh configuration files.  ISC or Internal Shared Configurations.
 # GIT_INTEGRATION_NAME
 # - Name of GIT Pipeline Integration.
 # FQDN_IMAGE
@@ -30,8 +32,17 @@ steps:
     git: ${{GIT_INTEGRATION_NAME}}
     stage: clone
 
+# Clone ISC Repository
+  clone_isc:
+    title: Cloning ISC Repository...
+    type: git-clone
+    repo: ${{CF_REPO_OWNER}}/${{ISC_REPOSITORY}}
+    revision: main
+    git: ${{GIT_INTEGRATION_NAME}}
+    stage: clone
+
 # Create Configuration Files
-  create_argocd_files:
+  create_kubernetes_files:
     title: Creation Configuration Files...
     type: freestyle
     image: quay.io/codefresh-contrib/yq:4
@@ -50,8 +61,23 @@ steps:
       - cat ./*/*.yaml
     stage: create
 
+# Create Codefresh Files
+  create_codefresh_files:
+    title: Creation Codefresh Files...
+    type: freestyle
+    image: quay.io/codefresh-contrib/yq:4
+    working_directory: ${{clone_isc}}/resources/configurations/products
+    commands:
+      - echo 'Creating Codefresh files...'
+      - cp ../templates/codefresh/products/product.yaml ${{APPLICATION_NAME}}
+      - echo 'Replacing placeholders in Codefresh files...'
+      - sed -i -e 's/application-name/${{APPLICATION_NAME}}/g' ${{APPLICATION_NAME}}.yaml
+      - echo 'Completed Codefresh file changes...'
+      - cat ./${{APPLICATION_NAME}}.yaml
+    stage: create
+
 # Commit Configuration Files
-  commit_and_push:
+  commit_and_push_configuration_files:
     title: Committing New Configuration Files...
     type: git-commit
     arguments:
@@ -59,6 +85,20 @@ steps:
       git: ${{GIT_INTEGRATION_NAME}}
       working_directory: '${{CF_VOLUME_PATH}}/${{CONFIGURATIONS_REPOSITORY}}'
       commit_message: 'Adding Configuration files for ${{APPLICATION_NAME}}'
+      git_user_name: codefresh-automation
+      git_user_email: automation@codefresh.io
+      rebase: true
+    stage: commit
+
+# Commit Codefresh Files
+  commit_and_push_codefresh_files:
+    title: Committing New Codefresh Files...
+    type: git-commit
+    arguments:
+      repo: ${{CF_REPO_OWNER}}/${{ISC_REPOSITORY}}
+      git: ${{GIT_INTEGRATION_NAME}}
+      working_directory: '${{CF_VOLUME_PATH}}/${{ISC_REPOSITORY}}'
+      commit_message: 'Adding Codefresh files for ${{APPLICATION_NAME}}'
       git_user_name: codefresh-automation
       git_user_email: automation@codefresh.io
       rebase: true
