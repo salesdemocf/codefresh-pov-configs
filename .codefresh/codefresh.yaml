@@ -43,7 +43,7 @@ steps:
         git: ${{GIT_INTEGRATION_NAME}}
     stage: clone
 
-  clone:
+  create:
     type: parallel
     steps:
     # Create Configuration Files
