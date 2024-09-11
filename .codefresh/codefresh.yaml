@@ -25,23 +25,24 @@ stages:
 steps:
   clone:
     type: parallel
-  # Clone Configurations Repository
-    clone_apps:
-      title: Cloning Configurations Repository...
-      type: git-clone
-      repo: ${{CF_REPO_OWNER}}/${{CONFIGURATIONS_REPOSITORY}}
-      revision: main
-      git: ${{GIT_INTEGRATION_NAME}}
-      stage: clone
+    steps:
+    # Clone Configurations Repository
+      clone_apps:
+        title: Cloning Configurations Repository...
+        type: git-clone
+        repo: ${{CF_REPO_OWNER}}/${{CONFIGURATIONS_REPOSITORY}}
+        revision: main
+        git: ${{GIT_INTEGRATION_NAME}}
+        stage: clone
 
-  # Clone ISC Repository
-    clone_isc:
-      title: Cloning ISC Repository...
-      type: git-clone
-      repo: ${{CF_REPO_OWNER}}/${{ISC_REPOSITORY}}
-      revision: main
-      git: ${{GIT_INTEGRATION_NAME}}
-      stage: clone
+    # Clone ISC Repository
+      clone_isc:
+        title: Cloning ISC Repository...
+        type: git-clone
+        repo: ${{CF_REPO_OWNER}}/${{ISC_REPOSITORY}}
+        revision: main
+        git: ${{GIT_INTEGRATION_NAME}}
+        stage: clone
 
 # Create Configuration Files
   create_kubernetes_files:
