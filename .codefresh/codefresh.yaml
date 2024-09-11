@@ -43,7 +43,6 @@ steps:
         git: ${{GIT_INTEGRATION_NAME}}
     stage: clone
 
-steps:
   clone:
     type: parallel
     steps:
