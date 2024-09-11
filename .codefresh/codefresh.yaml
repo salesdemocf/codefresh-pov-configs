@@ -58,9 +58,12 @@ steps:
           - cd ${{APPLICATION_NAME}}
           - cp -r ../templates/kustomize/ .
           - echo 'Replacing placeholders in Configurations files...'
-          - grep -rl 'application-name' . | xargs sed -i -e 's/application-name/${{APPLICATION_NAME}}/g'
-          - grep -rl 'fqdn-image' . | xargs sed -i -e 's/fqdn-image/${{FQDN_IMAGE}}/g'
-          - grep -rl 'image-tag' . | xargs sed -i -e 's/image-tage/${{IMAGE_TAG}}/g'
+          - >-
+            grep -rl 'application-name' . | xargs sed -i -e 's/application-name/${{APPLICATION_NAME}}/g'
+          - >-
+            grep -rl 'fqdn-image' . | xargs sed -i -e 's/fqdn-image/${{FQDN_IMAGE}}/g'
+          - >-
+            grep -rl 'image-tag' . | xargs sed -i -e 's/image-tage/${{IMAGE_TAG}}/g'
           - echo 'Completed Configuration file changes...'
           - cat ./*/*.yaml
 
