@@ -39,7 +39,7 @@ steps:
         title: Cloning ISC Repository...
         type: git-clone
         repo: ${{CF_REPO_OWNER}}/${{ISC_REPOSITORY}}
-        revision: main
+        revision: master
         git: ${{GIT_INTEGRATION_NAME}}
     stage: clone
 
