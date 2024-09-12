@@ -55,7 +55,7 @@ steps:
         commands:
           - echo 'Creating Configurations files...'
           - mkdir ${{APPLICATION_NAME}}
-          - cp -a ./templates/kustomize/ ./${{APPLICATION_NAME}}/
+          - cp -a ./templates/kustomize/. ./${{APPLICATION_NAME}}/
           - cd ${{APPLICATION_NAME}}
           - echo 'Replacing placeholders in Configurations files...'
           - grep -rl 'application-name' . | xargs sed -i -e 's/application-name/${{APPLICATION_NAME}}/g'
