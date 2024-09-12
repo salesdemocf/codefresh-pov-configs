@@ -21,7 +21,7 @@ spec:
         - envFrom:
             - secretRef:
                 name: application-name
-          image: full_image_name:image-tag
+          image: fqdn-image:image-tag
           imagePullPolicy: Always
           livenessProbe:
             failureThreshold: 3
