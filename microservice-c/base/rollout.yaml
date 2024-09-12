@@ -1,0 +1,59 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  labels:
+    app: microservice-c
+  name: microservice-c
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: microservice-c
+  strategy:
+    blueGreen:
+      activeService: microservice-c
+      autoPromotionEnabled: true
+      previewService: microservice-c-preview
+  template:
+    metadata:
+      labels:
+        app: microservice-c
+    spec:
+      containers:
+        - envFrom:
+            - secretRef:
+                name: microservice-c
+          image: codedev.jfrog.io/poc-demo-1-docker-local/microservice-c:4262220
+          imagePullPolicy: Always
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /health
+              port: 80
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 5
+          name: microservice-c
+          ports:
+            - containerPort: 80
+              name: http
+              protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /docs
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 3
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 256Mi
+      imagePullSecrets:
+        - name: cloudsmith-credentials
+      restartPolicy: Always
