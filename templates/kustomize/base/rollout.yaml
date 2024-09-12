@@ -23,27 +23,11 @@ spec:
       containers:
         - image: fqdn-image:image-tag
           imagePullPolicy: Always
-          livenessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: /health
-              port: 80
-            initialDelaySeconds: 60
-            periodSeconds: 30
-            timeoutSeconds: 5
           name: application-name
           ports:
             - containerPort: 80
               name: http
               protocol: TCP
-          readinessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: /docs
-              port: 80
-            initialDelaySeconds: 30
-            periodSeconds: 10
-            timeoutSeconds: 3
           resources:
             limits:
               cpu: 500m
