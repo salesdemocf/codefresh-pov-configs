@@ -21,10 +21,7 @@ spec:
         app: application-name
     spec:
       containers:
-        - envFrom:
-            - secretRef:
-                name: application-name
-          image: fqdn-image:image-tag
+        - image: fqdn-image:image-tag
           imagePullPolicy: Always
           livenessProbe:
             failureThreshold: 3
@@ -54,6 +51,4 @@ spec:
             requests:
               cpu: 100m
               memory: 256Mi
-      imagePullSecrets:
-        - name: cloudsmith-credentials
       restartPolicy: Always

@@ -21,10 +21,7 @@ spec:
         app: microservice-a
     spec:
       containers:
-        - envFrom:
-            - secretRef:
-                name: microservice-a
-          image: full_image_name:84cc527
+        - image: full_image_name:84cc527
           imagePullPolicy: Always
           livenessProbe:
             failureThreshold: 3
@@ -54,6 +51,4 @@ spec:
             requests:
               cpu: 100m
               memory: 256Mi
-      imagePullSecrets:
-        - name: cloudsmith-credentials
       restartPolicy: Always
