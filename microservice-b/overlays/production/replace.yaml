@@ -1,3 +1,3 @@
 - op: replace
   path: /spec/template/spec/containers/0/image
-  value: codedev.jfrog.io/poc-demo-1-docker-local/microservice-b:0c07ccb
+  value: codedev.jfrog.io/poc-demo-1-docker-local/microservice-b:e893a3a
