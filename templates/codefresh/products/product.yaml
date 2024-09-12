@@ -4,7 +4,7 @@ metadata:
   name: application-name
 spec:
   promotionFlows:
-    - name: dev-stg-prod-flow
+    - name: promotion-default
       gitTriggerSelectors:
         - key: commitMessage
           operator: In
