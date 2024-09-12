@@ -16,6 +16,9 @@ spec:
       autoPromotionEnabled: true
       previewService: application-name-preview
   template:
+    metadata:
+      labels:
+        app: application-name
     spec:
       containers:
         - envFrom:

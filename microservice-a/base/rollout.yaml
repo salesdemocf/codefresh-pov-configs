@@ -16,6 +16,9 @@ spec:
       autoPromotionEnabled: true
       previewService: microservice-a-preview
   template:
+    metadata:
+      labels:
+        app: microservice-a
     spec:
       containers:
         - envFrom:
