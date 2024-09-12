@@ -1,0 +1,59 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  labels:
+    app: microservice-b
+  name: microservice-b
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: microservice-b
+  strategy:
+    blueGreen:
+      activeService: microservice-b
+      autoPromotionEnabled: true
+      previewService: microservice-b-preview
+  template:
+    metadata:
+      labels:
+        app: microservice-b
+    spec:
+      containers:
+        - envFrom:
+            - secretRef:
+                name: microservice-b
+          image: codedev.jfrog.io/poc-demo-1-docker-local/microservice-b:0c07ccb
+          imagePullPolicy: Always
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /health
+              port: 80
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            timeoutSeconds: 5
+          name: microservice-b
+          ports:
+            - containerPort: 80
+              name: http
+              protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /docs
+              port: 80
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 3
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 256Mi
+      imagePullSecrets:
+        - name: cloudsmith-credentials
+      restartPolicy: Always
