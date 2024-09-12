@@ -1,0 +1,38 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  labels:
+    app: the-joker
+  name: the-joker
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels:
+      app: the-joker
+  strategy:
+    blueGreen:
+      activeService: the-joker
+      autoPromotionEnabled: true
+      previewService: the-joker-preview
+  template:
+    metadata:
+      labels:
+        app: the-joker
+    spec:
+      containers:
+        - image: codedev.jfrog.io/poc-demo-1-docker-local/the-joker:93200e9
+          imagePullPolicy: Always
+          name: the-joker
+          ports:
+            - containerPort: 80
+              name: http
+              protocol: TCP
+          resources:
+            limits:
+              cpu: 500m
+              memory: 512Mi
+            requests:
+              cpu: 100m
+              memory: 256Mi
+      restartPolicy: Always
