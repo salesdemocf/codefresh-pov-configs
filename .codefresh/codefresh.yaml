@@ -58,9 +58,9 @@ steps:
           - cp -a ./templates/kustomize/. ./${{APPLICATION_NAME}}/
           - cd ${{APPLICATION_NAME}}
           - echo 'Replacing placeholders in Configurations files...'
-          - grep -rl "application-name" . | xargs sed -i -e "s/application-name/${{APPLICATION_NAME}}/g"
-          - grep -rl "fqdn-image" . | xargs sed -i -e "s/fqdn-image/${{FQDN_IMAGE}}/g"
-          - grep -rl "image-tag" . | xargs sed -i -e "s/image-tage/${{IMAGE_TAG}}/g"
+          - grep -rl 'application-name' . | xargs sed -i -e 's|application-name|${{APPLICATION_NAME}}|g'
+          - grep -rl 'fqdn-image' . | xargs sed -i -e 's|fqdn-image|${{FQDN_IMAGE}}|g'
+          - grep -rl 'image-tag' . | xargs sed -i -e 's|image-tage|${{IMAGE_TAG}}|g'
           - echo 'Completed Configuration file changes...'
           - cat ./*/*.yaml
 
@@ -72,7 +72,7 @@ steps:
         working_directory: ${{clone_isc}}/resources/configurations/products
         commands:
           - echo 'Creating Codefresh files...'
-          - cp ./templates/codefresh/products/product.yaml ${{APPLICATION_NAME}}
+          - cp ${{CF_VOLUME_PATH}}/${{CF_REPO_NAME}}/templates/codefresh/products/product.yaml ${{APPLICATION_NAME}}
           - echo 'Replacing placeholders in Codefresh files...'
           - sed -i -e 's/application-name/${{APPLICATION_NAME}}/g' ${{APPLICATION_NAME}}.yaml
           - echo 'Completed Codefresh file changes...'
