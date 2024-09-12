@@ -21,10 +21,7 @@ spec:
         app: microservice-b
     spec:
       containers:
-        - envFrom:
-            - secretRef:
-                name: microservice-b
-          image: codedev.jfrog.io/poc-demo-1-docker-local/microservice-b:0c07ccb
+        - image: codedev.jfrog.io/poc-demo-1-docker-local/microservice-b:0c07ccb
           imagePullPolicy: Always
           livenessProbe:
             failureThreshold: 3
@@ -54,6 +51,4 @@ spec:
             requests:
               cpu: 100m
               memory: 256Mi
-      imagePullSecrets:
-        - name: cloudsmith-credentials
       restartPolicy: Always
